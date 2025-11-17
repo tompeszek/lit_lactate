@@ -86,6 +86,22 @@ def calculate_critical_power(erg_tests: List[Dict]) -> Optional[float]:
     return np.mean(critical_powers)
 
 
+def safe_round(value: float, decimals: int = 0) -> float:
+    """
+    Safely round a value, handling infinity and NaN.
+
+    Args:
+        value: Value to round
+        decimals: Number of decimal places
+
+    Returns:
+        Rounded value, or NaN if input is infinity or NaN
+    """
+    if np.isnan(value) or np.isinf(value):
+        return np.nan
+    return round(value, decimals)
+
+
 def interpolate_at_value(lactate_results: pd.DataFrame, field: str, target_value: float) -> Dict[str, float]:
     """
     Interpolate power, HR, and lactate at a given field value.
@@ -260,22 +276,22 @@ def calculate_training_zones(lactate_results: pd.DataFrame,
             'description': 'Easy recovery. Not hard enough to be productive',
             'calculation': 'Between 55% and 85% of LT1, based on HR',
             'power_range': {
-                'min_bottom': round(LT1_55_min['power']),
-                'median_bottom': round(LT1_55['power']),
-                'median_top': round(LT1_85['power']),
-                'max_top': round(LT1_85_max['power'])
+                'min_bottom': safe_round(LT1_55_min['power']),
+                'median_bottom': safe_round(LT1_55['power']),
+                'median_top': safe_round(LT1_85['power']),
+                'max_top': safe_round(LT1_85_max['power'])
             },
             'hr_range': {
-                'min_bottom': round(LT1_55_min['hr']),
-                'median_bottom': round(LT1_55['hr']),
-                'median_top': round(LT1_85['hr']),
-                'max_top': round(LT1_85_max['hr'])
+                'min_bottom': safe_round(LT1_55_min['hr']),
+                'median_bottom': safe_round(LT1_55['hr']),
+                'median_top': safe_round(LT1_85['hr']),
+                'max_top': safe_round(LT1_85_max['hr'])
             },
             'lactate_range': {
-                'min_bottom': max(round(LT1_55_min['lactate'], 1), 0),
-                'median_bottom': max(round(LT1_55['lactate'], 1), 0),
-                'median_top': round(LT1_85['lactate'], 1),
-                'max_top': round(LT1_85_max['lactate'], 1)
+                'min_bottom': max(safe_round(LT1_55_min['lactate'], 1), 0),
+                'median_bottom': max(safe_round(LT1_55['lactate'], 1), 0),
+                'median_top': safe_round(LT1_85['lactate'], 1),
+                'max_top': safe_round(LT1_85_max['lactate'], 1)
             }
         },
         {
@@ -283,22 +299,22 @@ def calculate_training_zones(lactate_results: pd.DataFrame,
             'description': 'Maximally productive zone. Hard as possible without going beyond LT1',
             'calculation': 'Between 85% and 100% of LT1',
             'power_range': {
-                'min_bottom': round(LT1_85_min['power']),
-                'median_bottom': round(LT1_85['power']),
-                'median_top': round(LT1['target']['power']),
-                'max_top': round(LT1['max']['power'])
+                'min_bottom': safe_round(LT1_85_min['power']),
+                'median_bottom': safe_round(LT1_85['power']),
+                'median_top': safe_round(LT1['target']['power']),
+                'max_top': safe_round(LT1['max']['power'])
             },
             'hr_range': {
-                'min_bottom': round(LT1_85_min['hr']),
-                'median_bottom': round(LT1_85['hr']),
-                'median_top': round(LT1['target']['hr']),
-                'max_top': round(LT1['max']['hr'])
+                'min_bottom': safe_round(LT1_85_min['hr']),
+                'median_bottom': safe_round(LT1_85['hr']),
+                'median_top': safe_round(LT1['target']['hr']),
+                'max_top': safe_round(LT1['max']['hr'])
             },
             'lactate_range': {
-                'min_bottom': round(LT1_85_min['lactate'], 1),
-                'median_bottom': round(LT1_85['lactate'], 1),
-                'median_top': round(LT1['target']['lactate'], 1),
-                'max_top': round(LT1['max']['lactate'], 1)
+                'min_bottom': safe_round(LT1_85_min['lactate'], 1),
+                'median_bottom': safe_round(LT1_85['lactate'], 1),
+                'median_top': safe_round(LT1['target']['lactate'], 1),
+                'max_top': safe_round(LT1['max']['lactate'], 1)
             }
         },
         {
@@ -306,22 +322,22 @@ def calculate_training_zones(lactate_results: pd.DataFrame,
             'description': 'Between LT1 and LT2. Lactate in steady state but elevated',
             'calculation': 'Up to the lesser of LT2 and Critical Power (usually LT2)',
             'power_range': {
-                'min_bottom': round(LT1['min']['power']),
-                'median_bottom': round(LT1['target']['power']),
-                'median_top': round(min(CP['power'], LT2['target']['power'])),
-                'max_top': round(min(CP['power'], LT2['max']['power']))
+                'min_bottom': safe_round(LT1['min']['power']),
+                'median_bottom': safe_round(LT1['target']['power']),
+                'median_top': safe_round(min(CP['power'], LT2['target']['power'])),
+                'max_top': safe_round(min(CP['power'], LT2['max']['power']))
             },
             'hr_range': {
-                'min_bottom': round(LT1['min']['hr']),
-                'median_bottom': round(LT1['target']['hr']),
-                'median_top': round(min(CP['hr'], LT2['target']['hr'])),
-                'max_top': round(min(CP['hr'], LT2['max']['hr']))
+                'min_bottom': safe_round(LT1['min']['hr']),
+                'median_bottom': safe_round(LT1['target']['hr']),
+                'median_top': safe_round(min(CP['hr'], LT2['target']['hr'])),
+                'max_top': safe_round(min(CP['hr'], LT2['max']['hr']))
             },
             'lactate_range': {
-                'min_bottom': round(LT1['min']['lactate'], 1),
-                'median_bottom': round(LT1['target']['lactate'], 1),
-                'median_top': round(min(CP['lactate'], LT2['target']['lactate']), 1),
-                'max_top': round(min(CP['lactate'], LT2['max']['lactate']), 1)
+                'min_bottom': safe_round(LT1['min']['lactate'], 1),
+                'median_bottom': safe_round(LT1['target']['lactate'], 1),
+                'median_top': safe_round(min(CP['lactate'], LT2['target']['lactate']), 1),
+                'max_top': safe_round(min(CP['lactate'], LT2['max']['lactate']), 1)
             }
         },
         {
@@ -329,22 +345,22 @@ def calculate_training_zones(lactate_results: pd.DataFrame,
             'description': 'Over MLSS. Lactate not steady and will increase over time',
             'calculation': 'Up to the greater of LT2 and Critical Power (usually Critical Power)',
             'power_range': {
-                'min_bottom': round(min(CP['power'], LT2['min']['power'])),
-                'median_bottom': round(min(CP['power'], LT2['target']['power'])),
-                'median_top': round(max(CP['power'], LT2['target']['power'])),
-                'max_top': round(max(CP['power'], LT2['max']['power']))
+                'min_bottom': safe_round(min(CP['power'], LT2['min']['power'])),
+                'median_bottom': safe_round(min(CP['power'], LT2['target']['power'])),
+                'median_top': safe_round(max(CP['power'], LT2['target']['power'])),
+                'max_top': safe_round(max(CP['power'], LT2['max']['power']))
             },
             'hr_range': {
-                'min_bottom': round(min(CP['hr'], LT2['min']['hr'])),
-                'median_bottom': round(min(CP['hr'], LT2['target']['hr'])),
-                'median_top': round(max(CP['hr'], LT2['target']['hr'])),
-                'max_top': round(max(CP['hr'], LT2['max']['hr']))
+                'min_bottom': safe_round(min(CP['hr'], LT2['min']['hr'])),
+                'median_bottom': safe_round(min(CP['hr'], LT2['target']['hr'])),
+                'median_top': safe_round(max(CP['hr'], LT2['target']['hr'])),
+                'max_top': safe_round(max(CP['hr'], LT2['max']['hr']))
             },
             'lactate_range': {
-                'min_bottom': round(min(CP['lactate'], LT2['min']['lactate']), 1),
-                'median_bottom': round(min(CP['lactate'], LT2['target']['lactate']), 1),
-                'median_top': round(max(CP['lactate'], LT2['target']['lactate']), 1),
-                'max_top': round(max(CP['lactate'], LT2['max']['lactate']), 1)
+                'min_bottom': safe_round(min(CP['lactate'], LT2['min']['lactate']), 1),
+                'median_bottom': safe_round(min(CP['lactate'], LT2['target']['lactate']), 1),
+                'median_top': safe_round(max(CP['lactate'], LT2['target']['lactate']), 1),
+                'max_top': safe_round(max(CP['lactate'], LT2['max']['lactate']), 1)
             }
         },
         {
@@ -352,22 +368,22 @@ def calculate_training_zones(lactate_results: pd.DataFrame,
             'description': 'Over LT2/CP, aiming around 90% of VO2max/HR (87.5%-92.5%). Very productive zone',
             'calculation': 'Over LT2 and Critical Power. Up to 92.5% max HR',
             'power_range': {
-                'min_bottom': round(min(CP['power'], LT2['target']['power'])),
-                'median_bottom': round(max(CP['power'], LT2['target']['power'])),
-                'median_top': round(HR925['power']),
-                'max_top': round(HR925['power'])
+                'min_bottom': safe_round(min(CP['power'], LT2['target']['power'])),
+                'median_bottom': safe_round(max(CP['power'], LT2['target']['power'])),
+                'median_top': safe_round(HR925['power']),
+                'max_top': safe_round(HR925['power'])
             },
             'hr_range': {
-                'min_bottom': round(max(CP['hr'], LT2['min']['hr'])),
-                'median_bottom': round(max(CP['hr'], LT2['min']['hr'])),
-                'median_top': round(HR925['hr']),
-                'max_top': round(HR925['hr'])
+                'min_bottom': safe_round(max(CP['hr'], LT2['min']['hr'])),
+                'median_bottom': safe_round(max(CP['hr'], LT2['min']['hr'])),
+                'median_top': safe_round(HR925['hr']),
+                'max_top': safe_round(HR925['hr'])
             },
             'lactate_range': {
-                'min_bottom': round(max(CP['lactate'], LT2['min']['lactate']), 1),
-                'median_bottom': round(max(CP['lactate'], LT2['min']['lactate']), 1),
-                'median_top': round(HR925['lactate'], 1),
-                'max_top': round(HR925['lactate'], 1)
+                'min_bottom': safe_round(max(CP['lactate'], LT2['min']['lactate']), 1),
+                'median_bottom': safe_round(max(CP['lactate'], LT2['min']['lactate']), 1),
+                'median_top': safe_round(HR925['lactate'], 1),
+                'max_top': safe_round(HR925['lactate'], 1)
             }
         },
         {
@@ -375,22 +391,22 @@ def calculate_training_zones(lactate_results: pd.DataFrame,
             'description': 'Above 92.5% max HR, but below 1k max pace',
             'calculation': '92.5% max HR up to 1k test score',
             'power_range': {
-                'min_bottom': round(HR925['power']),
-                'median_bottom': round(HR925['power']),
-                'median_top': round(Test1k['power']),
-                'max_top': round(Test1k['power'])
+                'min_bottom': safe_round(HR925['power']),
+                'median_bottom': safe_round(HR925['power']),
+                'median_top': safe_round(Test1k['power']),
+                'max_top': safe_round(Test1k['power'])
             },
             'hr_range': {
-                'min_bottom': round(HR925['hr']),
-                'median_bottom': round(HR925['hr']),
-                'median_top': min(round(Test1k['hr']), max_hr),
-                'max_top': min(round(Test1k['hr']), max_hr)
+                'min_bottom': safe_round(HR925['hr']),
+                'median_bottom': safe_round(HR925['hr']),
+                'median_top': min(safe_round(Test1k['hr']), max_hr),
+                'max_top': min(safe_round(Test1k['hr']), max_hr)
             },
             'lactate_range': {
-                'min_bottom': round(HR925['lactate'], 1),
-                'median_bottom': round(HR925['lactate'], 1),
-                'median_top': round(Test1k['lactate'], 1),
-                'max_top': round(Test1k['lactate'], 1)
+                'min_bottom': safe_round(HR925['lactate'], 1),
+                'median_bottom': safe_round(HR925['lactate'], 1),
+                'median_top': safe_round(Test1k['lactate'], 1),
+                'max_top': safe_round(Test1k['lactate'], 1)
             }
         },
         {
@@ -398,10 +414,10 @@ def calculate_training_zones(lactate_results: pd.DataFrame,
             'description': 'Anaerobic - sustainable for no more than 3 minutes. HR and Lactate not useful',
             'calculation': '1k test score and harder',
             'power_range': {
-                'min_bottom': round(Test1k['power']),
-                'median_bottom': round(Test1k['power']),
-                'median_top': round(max_power),
-                'max_top': round(max_power)
+                'min_bottom': safe_round(Test1k['power']),
+                'median_bottom': safe_round(Test1k['power']),
+                'median_top': safe_round(max_power),
+                'max_top': safe_round(max_power)
             },
             'hr_range': None,  # Not useful in Z7
             'lactate_range': None  # Not useful in Z7
