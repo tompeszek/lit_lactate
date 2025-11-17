@@ -167,7 +167,3 @@ docker run -p 8501:8501 lactate-analyzer
 - Lactate methods based on [lactater R package](https://github.com/fmmattioni/lactater) by Felipe Mattioni Maturana
 - Python implementation with improvements and optimizations
 - Built with [Streamlit](https://streamlit.io/)
-
-## License
-
-MIT

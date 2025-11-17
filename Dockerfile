@@ -14,6 +14,7 @@ COPY pyproject.toml .
 COPY uv.lock* ./
 COPY app.py .
 COPY lactate_analysis.py .
+COPY training_zones.py .
 
 # Install UV
 RUN pip install uv
