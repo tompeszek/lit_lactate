@@ -15,6 +15,10 @@ COPY uv.lock* ./
 COPY app.py .
 COPY lactate_analysis.py .
 COPY training_zones.py .
+COPY tab_input.py .
+COPY tab_metrics.py .
+COPY tab_zones.py .
+COPY tab_zones2.py .
 
 # Install UV
 RUN pip install uv
